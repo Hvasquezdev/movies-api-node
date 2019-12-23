@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index",
-    "start": "NODE_ENV:production node index"
+    "dev": "set DEBUG=app:* && set NODE_ENV=development && nodemon index",
+    "start": "set NODE_ENV=production && node index"
   },
   "keywords": [],
   "author": "Hector Vasquez",
