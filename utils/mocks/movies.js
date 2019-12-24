@@ -116,8 +116,24 @@ const moviesMock = [{
     "source": "http://phpbb.com/sed.js?venenatis=curabitur&non=convallis&sodales=duis&sed=consequat&tincidunt=dui&eu=nec&felis=nisi&fusce=volutpat&posuere=eleifend&felis=donec&sed=ut&lacus=dolor&morbi=morbi&sem=vel&mauris=lectus&laoreet=in&ut=quam&rhoncus=fringilla&aliquet=rhoncus&pulvinar=mauris&sed=enim&nisl=leo&nunc=rhoncus&rhoncus=sed&dui=vestibulum&vel=sit&sem=amet&sed=cursus&sagittis=id&nam=turpis&congue=integer&risus=aliquet&semper=massa&porta=id&volutpat=lobortis&quam=convallis&pede=tortor&lobortis=risus&ligula=dapibus&sit=augue&amet=vel&eleifend=accumsan&pede=tellus&libero=nisi&quis=eu&orci=orci&nullam=mauris&molestie=lacinia&nibh=sapien&in=quis&lectus=libero&pellentesque=nullam&at=sit&nulla=amet&suspendisse=turpis&potenti=elementum&cras=ligula&in=vehicula&purus=consequat&eu=morbi&magna=a&vulputate=ipsum&luctus=integer&cum=a&sociis=nibh",
     "tags": ["Crime|Drama"]
   }
-]
+];
+
+function filteredMoviesMocks(tag) {
+  return moviesMock.filter((movie) => movie.tags.includes(tag));
+}
+
+class MoviesServiceMock {
+  async getMovies() {
+    return Promise.resolve(moviesMock);
+  }
+
+  async createMovie() {
+    return Promise.resolve(moviesMock[0]);
+  }
+}
 
 module.exports = {
-  moviesMock
+  moviesMock,
+  filteredMoviesMocks,
+  MoviesServiceMock
 };
