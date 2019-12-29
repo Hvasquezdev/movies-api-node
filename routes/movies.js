@@ -1,5 +1,6 @@
 const express = require('express');
 const MoviesService = require('../services/movies');
+const buildMessage = require('../utils/buildMessage');
 
 const {
   movieIdSchema,
@@ -27,7 +28,7 @@ function moviesApi(app) {
 
       res.status(200).json({
         data: movies,
-        message: 'Movies listed'
+        message: buildMessage('movie', 'list')
       });
     } catch (error) {
       next(error);
@@ -49,7 +50,7 @@ function moviesApi(app) {
 
       res.status(200).json({
         data: movie,
-        message: 'Movie listed'
+        message: buildMessage('movie', 'retreive')
       });
     } catch (error) {
       next(error);
@@ -71,7 +72,7 @@ function moviesApi(app) {
 
       res.status(201).json({
         data: createdMovieId,
-        message: 'Movie created'
+        message: buildMessage('movie', 'create')
       });
     } catch (error) {
       next(error);
@@ -97,7 +98,7 @@ function moviesApi(app) {
 
       res.status(200).json({
         data: updatedMovieId,
-        message: 'Movie updated'
+        message: buildMessage('movie', 'update')
       });
     } catch (error) {
       next(error);
@@ -119,7 +120,7 @@ function moviesApi(app) {
 
       res.status(200).json({
         data: deletedMovieId,
-        message: 'Movie deleted'
+        message: buildMessage('movie', 'delete')
       });
     } catch (error) {
       next(error);
