@@ -21,7 +21,6 @@ class MoviesService {
 
   async createMovie({ movie }) {
     const createdMovieId = await this.mongoDB.create(this.collection, movie);
-    console.log(createdMovieId)
     return createdMovieId;
   }
 
