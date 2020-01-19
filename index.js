@@ -9,6 +9,7 @@ const {
 // Routes
 const moviesApi = require('./routes/movies');
 const userMoviesApi = require('./routes/userMovies');
+const authApi = require('./routes/auth');
 
 // Error Handlers
 const {
@@ -23,6 +24,7 @@ app.use(express.json());
 // Routes
 moviesApi(app);
 userMoviesApi(app);
+authApi(app);
 
 // Catch 404 error
 app.use(notFoundHandler);

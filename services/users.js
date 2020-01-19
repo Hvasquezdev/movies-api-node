@@ -8,7 +8,7 @@ class UsersService {
   }
 
   async getUser({ email }) {
-    const { user } = await this.mongoDB.getAll(this.collection, { email });
+    const [ user ] = await this.mongoDB.getAll(this.collection, { email });
     return user;
   }
 
