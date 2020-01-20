@@ -95,6 +95,14 @@ function authApi(app) {
     } = req;
 
     try {
+      const userExist = await usersService.verifyIfUserExist(user);
+
+      if (userExist) {
+        return res.status(409).json({
+          message: 'user already exist'
+        });
+      }
+
       const createdUserId = await usersService.createUser({
         user
       });
