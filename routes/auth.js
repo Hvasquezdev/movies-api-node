@@ -3,6 +3,9 @@ const passport = require('passport');
 const boom = require('@hapi/boom');
 const jwt = require('jsonwebtoken');
 
+const THIRTY_DAYS_IN_SEC = 2592000;
+const TWO_HOURS_IN_SEC = 7200;
+
 // Services
 const ApiKeysService = require('../services/apiKeys');
 const UsersService = require('../services/users');
@@ -32,7 +35,8 @@ function authApi(app) {
 
   router.post('/sign-in', async function (req, res, next) {
     const {
-      apiKeyToken
+      apiKeyToken,
+      rememberMe
     } = req.body;
     if (!apiKeyToken) {
       return next(boom.unauthorized('apiKeyToken is required'));
@@ -71,7 +75,13 @@ function authApi(app) {
             scopes: apiKey.scopes
           };
           const token = jwt.sign(payload, config.authJwtSecret, {
-            expiresIn: '15m'
+            expiresIn: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC
+          });
+
+          res.cookie('token', token, {
+            httpOnly: !config.dev,
+            secure: !config.dev,
+            maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC
           });
 
           return res.status(200).json({
