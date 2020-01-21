@@ -8,7 +8,10 @@ const {
   createMovieSchema,
   updateMovieSchema
 } = require('../utils/schemas/movies');
+
+// Middlewares
 const validationHandler = require('../utils/middleware/validationHandler');
+const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
 
 const cacheResponse = require('../utils/cacheResponse');
 const {
@@ -27,127 +30,139 @@ function moviesApi(app) {
 
   // GET all the movies
   router.get('/', passport.authenticate('jwt', {
-    session: false
-  }), async function (req, res, next) {
-    cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
-    const {
-      tags
-    } = req.query;
-
-    try {
-      const movies = await moviesService.getMovies({
+      session: false
+    }),
+    scopesValidationHandler(['read:movies']),
+    async function (req, res, next) {
+      cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
+      const {
         tags
-      });
+      } = req.query;
 
-      res.status(200).json({
-        data: movies,
-        message: buildMessage('movie', 'list')
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+      try {
+        const movies = await moviesService.getMovies({
+          tags
+        });
+
+        res.status(200).json({
+          data: movies,
+          message: buildMessage('movie', 'list')
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
 
   // GET a movie by id
   router.get('/:movieId', passport.authenticate('jwt', {
-    session: false
-  }), validationHandler({
-    movieId: movieIdSchema
-  }, 'params'), async function (req, res, next) {
-    cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
-    const {
-      movieId
-    } = req.params;
-
-    try {
-      const movie = await moviesService.getMovie({
+      session: false
+    }),
+    scopesValidationHandler(['read:movies']),
+    validationHandler({
+      movieId: movieIdSchema
+    }, 'params'), async function (req, res, next) {
+      cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
+      const {
         movieId
-      });
+      } = req.params;
 
-      res.status(200).json({
-        data: movie,
-        message: buildMessage('movie', 'retreive')
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+      try {
+        const movie = await moviesService.getMovie({
+          movieId
+        });
+
+        res.status(200).json({
+          data: movie,
+          message: buildMessage('movie', 'retreive')
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
 
   // CREATE a new movie
   router.post('/', passport.authenticate('jwt', {
-    session: false
-  }), validationHandler(createMovieSchema), async function (req, res, next) {
-    const {
-      body: movie
-    } = req;
+      session: false
+    }),
+    scopesValidationHandler(['create:movie']),
+    validationHandler(createMovieSchema),
+    async function (req, res, next) {
+      const {
+        body: movie
+      } = req;
 
-    try {
-      const createdMovieId = await moviesService.createMovie({
-        movie
-      });
+      try {
+        const createdMovieId = await moviesService.createMovie({
+          movie
+        });
 
-      console.log(createdMovieId);
+        console.log(createdMovieId);
 
-      res.status(201).json({
-        data: createdMovieId,
-        message: buildMessage('movie', 'create')
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+        res.status(201).json({
+          data: createdMovieId,
+          message: buildMessage('movie', 'create')
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
 
   // EDIT an exist movie
   router.put('/:movieId', passport.authenticate('jwt', {
-    session: false
-  }), validationHandler({
-    movieId: movieIdSchema
-  }, 'params'), validationHandler(updateMovieSchema), async function (req, res, next) {
-    const {
-      movieId
-    } = req.params;
-    const {
-      body: movie
-    } = req;
-
-    try {
-      const updatedMovieId = await moviesService.updateMovie({
-        movieId,
-        movie
-      });
-
-      res.status(200).json({
-        data: updatedMovieId,
-        message: buildMessage('movie', 'update')
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  // EDELETE a movie
-  router.delete('/:movieId', passport.authenticate('jwt', {
-    session: false
-  }), validationHandler({
-    movieId: movieIdSchema
-  }, 'params'), async function (req, res, next) {
-    const {
-      movieId
-    } = req.params;
-
-    try {
-      const deletedMovieId = await moviesService.deleteMovie({
+      session: false
+    }),
+    scopesValidationHandler(['edit:movie']),
+    validationHandler({
+      movieId: movieIdSchema
+    }, 'params'), validationHandler(updateMovieSchema),
+    async function (req, res, next) {
+      const {
         movieId
-      });
+      } = req.params;
+      const {
+        body: movie
+      } = req;
 
-      res.status(200).json({
-        data: deletedMovieId,
-        message: buildMessage('movie', 'delete')
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+      try {
+        const updatedMovieId = await moviesService.updateMovie({
+          movieId,
+          movie
+        });
+
+        res.status(200).json({
+          data: updatedMovieId,
+          message: buildMessage('movie', 'update')
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
+
+  // DELETE a movie
+  router.delete('/:movieId', passport.authenticate('jwt', {
+      session: false
+    }),
+    scopesValidationHandler(['delete:movie']),
+    validationHandler({
+      movieId: movieIdSchema
+    }, 'params'), async function (req, res, next) {
+      const {
+        movieId
+      } = req.params;
+
+      try {
+        const deletedMovieId = await moviesService.deleteMovie({
+          movieId
+        });
+
+        res.status(200).json({
+          data: deletedMovieId,
+          message: buildMessage('movie', 'delete')
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
 }
 
 module.exports = moviesApi;
